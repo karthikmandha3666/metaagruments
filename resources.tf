@@ -4,7 +4,7 @@ resource "azurerm_resource_group" "azrg" {
 }
 
 resource "azurerm_storage_account" "azsa" {
-  name = "azrm storage account"
+  name = "azrmstorage"
   resource_group_name = azurerm_resource_group.azrg.name
   location = azurerm_resource_group.azrg.location
   account_tier = "Standard"
@@ -17,7 +17,7 @@ resource "azurerm_storage_account" "azsa" {
 
 resource "azurerm_virtual_network" "Vnet" {
   name = "vnet-meta"
-  address_space = "10.1.0.0./16"
+  address_space = ["10.1.0.0/16"]
   resource_group_name = azurerm_resource_group.azrg.name
   location = azurerm_resource_group.azrg.location
 
@@ -34,11 +34,11 @@ resource "azurerm_network_security_group" "nsg" {
   name = "subnet-meta"
   resource_group_name = azurerm_resource_group.azrg.name
   location = azurerm_resource_group.azrg.location
-  security_rule = {
+  security_rule  {
     name = "allow_ssh"
     Priority = 300
     direction = "Inbound"
-    acces  = "Allow"
+    access  = "Allow"
     destination_port_range = "22"
     source_port_range = "*"
     protocol = "Tcp"
@@ -64,7 +64,7 @@ resource "azurerm_network_interface" "nic" {
   location = azurerm_resource_group.azrg.location
   ip_configuration {
     name = "ioconfih-meta"
-    subnet_id = ""
+    subnet_id = "azurerm_subnet.subnet.id"
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id = azurerm_public_ip.pip[count.index].id
   }
@@ -91,7 +91,7 @@ resource "azurerm_linux_virtual_machine" "linux_vm" {
     }
   admin_username = var.admin_user
   admin_ssh_key {
-    username = var.admin_user.username
+    username = var.admin_user
     public_key = file(var.ssh_public_key_path)
   }
   disable_password_authentication = true
