@@ -30,6 +30,6 @@ variable "ssh_public_key_path" {
 
 variable "Vm_count" {
   description = "No. of vm count"
-  type = string
+  type = number
   default = 3
 }
